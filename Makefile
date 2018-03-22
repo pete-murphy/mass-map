@@ -83,7 +83,7 @@ tif/ma-merged-90m.tif: \
 	tif/srtm_22_04.tif \
 	tif/srtm_23_04.tif 
 	@mkdir -p $(dir $@)
-	@python gdal_merge.py \
+	@gdal_merge.py \
 		-o $@ \
 		-init "255" \
 		tif/srtm_*.tif
