@@ -91,10 +91,9 @@ tif/ma-merged-90m.tif: \
 # Convert to Mercator
 tif/ma-reprojected.tif: tif/ma-merged-90m.tif
 	@mkdir -p $(dir $@)
-	@echo "Hello"
 	@gdalwarp \
-		--debug on \
 		-co "TFW=YES" \
+		-s_srs "EPSG:4326" \
 		-t_srs "EPSG:3857" \
 		$< \
 		$@
@@ -102,7 +101,6 @@ tif/ma-reprojected.tif: tif/ma-merged-90m.tif
 # Crop raster to shape of Massachusetts
 tif/ma-cropped.tif: tif/ma-reprojected.tif
 	@mkdir -p $(dir $@)
-	@echo "Now we are here"
 	@gdalwarp \
 		-cutline shp/cb_2014_25_tract_500k.shp \
 		-crop_to_cutline \
