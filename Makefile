@@ -91,9 +91,10 @@ tif/ma-merged-90m.tif: \
 # Convert to Mercator
 tif/ma-reprojected.tif: tif/ma-merged-90m.tif
 	@mkdir -p $(dir $@)
+	@echo "Hello"
 	@gdalwarp \
+		--debug on \
 		-co "TFW=YES" \
-		-s_srs "EPSG:4326" \
 		-t_srs "EPSG:3857" \
 		$< \
 		$@
@@ -101,6 +102,7 @@ tif/ma-reprojected.tif: tif/ma-merged-90m.tif
 # Crop raster to shape of Massachusetts
 tif/ma-cropped.tif: tif/ma-reprojected.tif
 	@mkdir -p $(dir $@)
+	@echo "Now we are here"
 	@gdalwarp \
 		-cutline shp/cb_2014_25_tract_500k.shp \
 		-crop_to_cutline \
@@ -116,11 +118,11 @@ tif/ma-color-crop.tif: tif/ma-cropped.tif
 		-az 315 \
 		-alt 60 \
 		-compute_edges
-	@python gdal_calc.py \
+	@gdal_calc.py \
 		-A tmp/hillshade.tmp.tif \
 		--outfile=$@ \
 		--calc="255*(A>220) + A*(A<=220)"
-	@python gdal_calc.py \
+	@gdal_calc.py \
 		-A tmp/hillshade.tmp.tif \
 		--outfile=tmp/opacity_crop.tmp.tif \
 		--calc="1*(A>220) + (256-A)*(A<=220)"
