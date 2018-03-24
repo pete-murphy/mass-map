@@ -1,4 +1,7 @@
-.PHONY: all clean
+include .env
+export
+
+.PHONY: all clean test
 
 # Download zips
 zip/cb_2014_25_tract_500k.zip:
@@ -132,8 +135,7 @@ ma.png: tif/ma-color-crop.tif
 		-resize x960 \
 		$< $@
 
-all: svg/ma-mercator.svg \
-	ma.png
+all: ma.png
 
 clean: 
 	@rm -rf svg
@@ -141,3 +143,6 @@ clean:
 	@rm -rf tif
 	@rm -rf shp
 	@rm -rf topojson
+
+test:
+	@node puppeteer

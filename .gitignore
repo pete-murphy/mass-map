@@ -1,1 +1,14 @@
-*/
+/json
+/shp
+/node_modules
+/shp
+/svg
+/tif
+/topojson
+/zip
+/tmp
+
+.env
+
+config.json
+*.sandbox.*
