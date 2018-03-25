@@ -1,3 +1,5 @@
+# Prerequisites: gdal, imagemagick, node, d3, topojson, ndjson-cli 
+
 include .env
 export
 
@@ -135,7 +137,20 @@ ma.png: tif/ma-color-crop.tif
 		-resize x960 \
 		$< $@
 
-all: ma.png
+knollwood-data/output/results.json: 
+	@mkdir -p $(dir $@)
+	@node knollwood-data
+
+knollwood-data/output/geocoded-results-success.ndjson: knollwood-data/output/results.json
+	@node knollwood-data/geocode
+
+# Need to add something in here to re-try failed geo-coding results
+
+knollwood-data/output/geocoded-results.json: knollwood-data/output/geocoded-results-success.ndjson
+	@ndjson-reduce < $< > $@
+
+all: ma.png \
+	knollwood-data/output/geocoded-results.json
 
 clean: 
 	@rm -rf svg

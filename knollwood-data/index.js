@@ -1,3 +1,7 @@
+// This is the puppeteer script, notable issue(s):
+// CANNOT CANCEL THESE PROMISES ONCE THEY KICK OFF,
+// instead have to wait for them to time out :(
+// TODO: write these using Futures
 const puppeteer = require("puppeteer")
 const {
   compose,
@@ -10,6 +14,7 @@ const {
 } = require("ramda")
 const fs = require("fs")
 const path = require("path")
+const readline = require("readline")
 
 const {
   USER,
@@ -20,28 +25,47 @@ const {
   URL
 } = require("./config.json")
 
+// from .env included then exported via Makefile
+const { GOOGLE_MAPS_API_KEY } = process.env
+
 let clients = []
 
+const id = x => x
 const clean = compose(
   reduce(
     (acc, x) => ({ ...acc, [x[0]]: x[1] }),
     {}
   ),
-  map(map(compose(replace(":", ""), trim)))
+  map(
+    map(
+      compose(
+        // Bad data
+        replace("Monomessatt", "Monomessat"),
+        replace(
+          "3.5 Mary Ann Drive Garage South",
+          "12 Mary Ann Drive"
+        ),
+        // Cleaning up formatting
+        replace(":", ""),
+        trim
+      )
+    )
+  )
 )
 
+// Haven't tested this yet
 const showProgress = (dvd, dvr) => {
   const PCT = Math.round(100 * dvd / dvr)
-  const COMPLETED = "▇".repeat(PCT)
+  const COMPLETED = "█".repeat(PCT)
   const REMAINDER = "░".repeat(100 - PCT)
-  console.clear()
-  console.log(`${COMPLETED}${REMAINDER} ${PCT}%`)
+  readline.cursorTo(process.stdout, 0, 0)
+  process.stdout.write(
+    `${COMPLETED}${REMAINDER} ${PCT}%\nScraping in progress...\n`
+  )
 }
 
 const scrape = async url => {
-  const browser = await puppeteer.launch({
-    headless: false
-  })
+  const browser = await puppeteer.launch()
   const page = await browser.newPage()
 
   await page.goto(url)
@@ -82,7 +106,27 @@ const scrape = async url => {
     clients.push(clean(client))
   }
 
+  browser.close()
   return clients
 }
 
-scrape(URL).then(console.log)
+// Path is created in Makefile with
+// mkdir -p knollwood-data/output
+const output = path.join(__dirname, "./output")
+
+scrape(URL)
+  .then(results =>
+    fs.writeFile(
+      path.join(output, "./results.json"),
+      JSON.stringify(results, null, 2),
+      "utf8",
+      error =>
+        error
+          ? console.error(error)
+          : "Output successfully written\n"
+    )
+  )
+  .then(() =>
+    console.log("Clients successfully scraped\n")
+  )
+  .catch(console.error)
