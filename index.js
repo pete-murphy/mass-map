@@ -2,6 +2,7 @@ import { selectAll } from "d3-selection"
 import { geoMercator, geoPath } from "d3-geo"
 import data from "./knollwood-data/output/safe-output"
 import massMap from "./json/ma"
+import massRaster from "./ma.png"
 
 const width = 920
 const height = 920
@@ -18,9 +19,11 @@ const projection = geoMercator().fitSize(
 const path = geoPath().projection(projection)
 
 svg
-  .append("path")
-  .attr("d", path(massMap))
-  .style("fill", "red")
-  .style("opacity", "0.2")
+  .append("image")
+  .attr("id", "Raster")
+  .attr("xlink:href", massRaster)
+  .attr("class", "raster")
+  .attr("width", 920)
+  .attr("height", 920)
 
 svg.append("path").attr("d", path(data))

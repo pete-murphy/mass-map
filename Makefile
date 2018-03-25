@@ -152,12 +152,17 @@ knollwood-data/output/geocoded-results.json: knollwood-data/output/geocoded-resu
 # This creates a properly-formatted GeoJSON file with no sensitive
 # client info, just last name and coords of installed system.
 knollwood-data/output/safe-output.json: knollwood-data/output/geocoded-results-success.ndjson
-	@ndjson-map \
-		'd = ({type: "Feature", geometry: { type: "Point", coordinates: [d.Location.lng, d.Location.lat] }, \
-		properties: { name: d["Last Name"] }}), d' \
+	@ndjson-sort \
+		'a.Location.lat - b.Location.lat' \
 		< $< \
+		| ndjson-map \
+		'd = ({type: "Feature", geometry: \
+		{ type: "Point", coordinates: \
+		[d.Location.lng, d.Location.lat] }, \
+		properties: { name: d["Last Name"] }}), d' \
 		| ndjson-reduce \
-		'p.features.push(d), p' '{type: "FeatureCollection", features: []}' \
+		'p.features.push(d), p' \
+		'{type: "FeatureCollection", features: []}' \
 		> $@
 
 all: ma.png \
