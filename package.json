@@ -6,6 +6,7 @@
   "author": "<peterfrancismurphy@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "d3": "^5.0.0",
     "fluture": "^8.0.2",
     "puppeteer": "^1.2.0",
     "ramda": "^0.25.0",
