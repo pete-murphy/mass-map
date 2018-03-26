@@ -4,8 +4,8 @@ import data from "./knollwood-data/output/safe-output"
 import massMap from "./json/ma"
 import massRaster from "./ma.png"
 
-const width = 920
-const height = 920
+const width = 960
+const height = 960
 
 const svg = selectAll("svg")
   .attr("width", width)
@@ -23,7 +23,28 @@ svg
   .attr("id", "Raster")
   .attr("xlink:href", massRaster)
   .attr("class", "raster")
-  .attr("width", 920)
-  .attr("height", 920)
+  .attr("width", width)
+  .attr("height", height)
 
-svg.append("path").attr("d", path(data))
+// Turns out, I probably would have
+// been better off leaving the data
+// in CSV format or similar...
+svg
+  .append("g")
+  .selectAll("circle")
+  .data(data.features)
+  .enter()
+  .append("circle")
+  .attr(
+    "cx",
+    ({ geometry: { coordinates } }) =>
+      projection(coordinates)[0]
+  )
+  .attr(
+    "cy",
+    ({ geometry: { coordinates } }) =>
+      projection(coordinates)[1]
+  )
+  .attr("r", 20)
+  .style("fill", "red")
+  .style("opacity", "0.25")

@@ -153,7 +153,7 @@ knollwood-data/output/geocoded-results.json: knollwood-data/output/geocoded-resu
 # client info, just last name and coords of installed system.
 knollwood-data/output/safe-output.json: knollwood-data/output/geocoded-results-success.ndjson
 	@ndjson-sort \
-		'a.Location.lat - b.Location.lat' \
+		'b.Location.lat - a.Location.lat' \
 		< $< \
 		| ndjson-map \
 		'd = ({type: "Feature", geometry: \
