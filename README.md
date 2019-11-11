@@ -1,3 +1,5 @@
+![](./ma.png)
+
 # Map-making with GDAL, D3, Puppeteer and Make
 This project utilizes an array of tools to automate the creation of a map of Massachusetts. Starting point is Thomas Thoren's ["Making a New York Times Map"](https://thomasthoren.com/2016/02/28/making-a-new-york-times-map.html).
 
